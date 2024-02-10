@@ -1,7 +1,9 @@
 from django.urls import path
 from rest_framework import routers
 
-from lms import views
+from lms import views, apps
+
+app_name = apps.LmsConfig.name
 
 router = routers.DefaultRouter()
 router.register(r'course', views.CourseViewSet, basename='course')
