@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'users.apps.UsersConfig',
+    'lms.apps.LmsConfig',
+
     'rest_framework',
 ]
 
