@@ -1,14 +1,14 @@
 from rest_framework import permissions
 
-from lms.models import Course
-
 
 class IsModerator(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.groups.filter(name='moderator').exists()
 
     def has_object_permission(self, request, view, obj):
-        return request.user.groups.filter(name='moderator').exists()
+        if request.user.groups.filter(name='moderator').exists():
+            return True
+        return obj.owner == request.user
 
 
 class IsOwner(permissions.BasePermission):
