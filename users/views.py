@@ -1,8 +1,10 @@
 from rest_framework import generics, viewsets, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
+from lms.permissions import IsSelfUser
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserSerializer
 
@@ -11,6 +13,16 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     default_serializer = UserSerializer
     queryset = User.objects.all()
+    perms_methods = {
+        'create': [AllowAny],
+        'update': [IsAuthenticated, IsSelfUser | IsAdminUser],
+        'partial_update': [IsAuthenticated, IsSelfUser | IsAdminUser],
+        'destroy': [IsAuthenticated, IsSelfUser | IsAdminUser],
+    }
+
+    def get_permissions(self):
+        self.permission_classes = self.perms_methods.get(self.action, self.permission_classes)
+        return [permission() for permission in self.permission_classes]
 
     def create(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
